@@ -1,0 +1,74 @@
+<html>
+<head>
+  <title>Smart mapa</title>
+<script type="text/javascript" src="https://code.angularjs.org/1.5.8/angular.min.js"></script>
+<script>
+var app = angular.module('app', []);
+app.controller('appCtrl', function ($scope, $http, $window) {
+  $scope.inputData = "";
+  $scope.resultData = [];
+  $scope.showResult = false;
+
+  $scope.parse = function() {
+      $scope.showResult = false;
+      $scope.resultData = [];
+      var inp = $scope.inputData;
+
+
+	  console.log($scope.inputData);
+	  console.log($scope.inputData.match(/FieldsSymbols\>(.*?)\<\/FieldsSymbols/m));
+      var fieldsStr = $scope.inputData.match(/FieldsSymbols\>(.*?)\<\/FieldsSymbols/m);
+      fieldsStr = fieldsStr[1];
+      fieldsStr = fieldsStr.replace(/\<string\>/g, "");
+      var fields = fieldsStr.split("</string>");
+
+
+
+      var valStr = inp.match(/FieldValues\>([\s\S]*?)\<\/FieldValues/m);
+      valStr = valStr[1];
+      valStr = valStr.replace(/\<string\>/g, "");
+      var values = valStr.split("</string>");
+      console.log(fields.length);
+      console.log(values.length);
+
+      for (i = 0; i < values.length; i++) {
+        var o = {};
+        o.field = fields[i];
+        o.val = values[i];
+        $scope.resultData.push(o);
+        //console.log($scope.resultData);
+      }
+      $scope.showResult = true;
+  }
+});
+</script>
+<style>
+    tr:hover {
+      background-color: lightyellow;
+    }
+</style>
+</head>
+<body>
+
+  <div ng-app="app">
+    <div class="container" ng-controller="appCtrl">
+        <textarea ng-model="inputData" id="inputData" cols="100" ng-change="showResult = false; parse()"></textarea>
+
+        <div ng-show="showResult">Wynik</div>
+        <table>
+
+
+          <tr ng-repeat="d in resultData">
+            <td>{{d.field}}</td>
+            <td>{{d.val}}</td>
+          </tr>
+        </table>
+
+    </div>
+  </div>
+
+
+
+
+</body>
+</html>
